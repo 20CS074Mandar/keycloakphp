@@ -10,7 +10,7 @@ services:
     networks:
       - service_sso_net
     ports:
-      - "8080:8080"
+      - "2080:8080"
   
   service_app:
     build:
@@ -20,7 +20,7 @@ services:
     networks:
       - service_sso_net
     ports: 
-      - 8000:80
+      - 3000:80
     volumes: 
       - ./src/php:/var/www/html/
 
