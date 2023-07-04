@@ -1,0 +1,31 @@
+version: '3'
+services:
+
+  keycloak:
+    image: jboss/keycloak
+    hostname: keycloak
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+    networks:
+      - service_sso_net
+    ports:
+      - "8080:8080"
+  
+  service_app:
+    build:
+      context: ./src/php
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - service_sso_net
+    ports: 
+      - 8000:80
+    volumes: 
+      - ./src/php:/var/www/html/
+
+networks:
+  service_sso_net:
+
+volumes: 
+  keycloak_sso_vol:
