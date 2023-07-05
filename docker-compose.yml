@@ -5,7 +5,7 @@ services:
     image: jboss/keycloak
     hostname: keycloak
     environment:
-      - KEYCLOAK_USER=admin
+      - KEYCLOAK_USER=adminj
       - KEYCLOAK_PASSWORD=admin
     networks:
       - service_sso_net
