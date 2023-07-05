@@ -1,5 +1,5 @@
 <?php
 require_once 'auth.php';
 authorize();
-echo "profile";
+echo "Profile";
 ?>
