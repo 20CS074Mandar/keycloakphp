@@ -1,31 +1,50 @@
 version: '3'
+
+volumes:
+  mysql_data:
+    driver: local
+  keycloak_sso_vol:
+
 services:
+  mariadb:
+    image: mariadb
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+    ports:
+      - 3600:3306
 
   keycloak:
-    image: jboss/keycloak
-    hostname: keycloak
+    image: quay.io/keycloak/keycloak:latest
+    command: start-dev
     environment:
-      - KEYCLOAK_USER=adminj
-      - KEYCLOAK_PASSWORD=admin
-    networks:
-      - service_sso_net
+      DB_VENDOR: mariadb
+      DB_ADDR: mariadb
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+      JGROUPS_DISCOVERY_PROTOCOL: JDBC_PING
+    depends_on:
+      - mariadb
     ports:
-      - "2080:8080"
-  
+      - 8000:8080
+
   service_app:
     build:
       context: ./src/php
       dockerfile: Dockerfile
     restart: always
-    networks:
-      - service_sso_net
-    ports: 
-      - 3000:80
-    volumes: 
-      - ./src/php:/var/www/html/
-
-networks:
-  service_sso_net:
-
-volumes: 
-  keycloak_sso_vol:
+    volumes:
+      - ./src/php:/var/www/html   # Mounting the volume for PHP project
+    depends_on:
+      - keycloak
+    ports:
+      - 8080:80
