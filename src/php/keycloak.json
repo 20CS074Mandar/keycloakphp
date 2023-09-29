@@ -1,6 +1,6 @@
 {
   "realm": "gsosrealm",
-  "auth-server-url": "http://localhost:8000/",
+  "auth-server-url": "http://localhost:8080/",
   "ssl-required": "external",
   "resource": "gsosclient",
   "public-client": true,

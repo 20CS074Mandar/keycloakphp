@@ -1,11 +1,11 @@
 <?php
 
-$role="default";
+function authorize() {
     ?>
-    <script src="http://localhost:8000/js/keycloak.js"></script>
+    <script src="http://localhost:8080/js/keycloak.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
     <script type="text/javascript">
-        const keycloak = new Keycloak('http://localhost:8080/keycloak.json');
+        const keycloak = new Keycloak('http://localhost:8000/keycloak.json');
         const initOptions = {
             responseMode: 'fragment',
             flow: 'standard',
@@ -14,30 +14,19 @@ $role="default";
         };
 
         function logout() {
+            Cookies.remove('token');
+            Cookies.remove('callback');
             keycloak.logout();
         }
-        function hasRole(role) {
-            return keycloak.hasRealmRole(role);
-        }
 
-        keycloak.init(initOptions).success(function(authenticated) {
+        keycloak.init(initOptions).then(function(authenticated) {
             if (authenticated) {
                 // User is logged in
                 Cookies.set('token', keycloak.token);
-                console.log(keycloak.hasRealmRole("quiz_creator"));
-                console.log(keycloak.hasRealmRole("quiz_approver"));
-                
-                if(keycloak.hasRealmRole("quiz_creator")){
-                    console.log();
-                    Cookies.set('role', "quiz_creator");
-                    //$role="quiz_creator";
-                    //location.href = "dashboard.php?role=quiz_creator";
-                }
-                else if(keycloak.hasRealmRole("quiz_approver")){
-                    Cookies.set('role', "quiz_approver");
-                    //$role="quiz_approver";
-                    //location.href = "dashboard.php?role=quiz_approver";
-                }
+                Cookies.set('callback', JSON.stringify(keycloak.tokenParsed.resource_access.testclient.roles));
+                var arr = JSON.parse(Cookies.get('callback'));
+                arr = arr.reduce((index, value) => (index[value] = true, index), {});
+                console.log("token stored in cookies");
             } else {
                 // User is not logged in, redirect to login page
                 console.log("Redirect to login page ");
@@ -47,3 +36,6 @@ $role="default";
             console.log('Init Error');
         });
     </script>
+    <?php
+}
+?>

@@ -35,7 +35,7 @@ services:
     depends_on:
       - mariadb
     ports:
-      - 8000:8080
+      - 8080:8080
 
   service_app:
     build:
@@ -47,4 +47,4 @@ services:
     depends_on:
       - keycloak
     ports:
-      - 8080:80
+      - 8000:80
